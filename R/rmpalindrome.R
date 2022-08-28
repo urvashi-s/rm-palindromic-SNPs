@@ -9,7 +9,7 @@
 #' result_df <- rm_palindrome(myData,0.2);
 #' @import dplyr
 #' @export
-rm_palindrome <- function(testData, t) {
+rmpalindrome <- function(testData, t) {
   if (t > 0.5){
     print("Invalid input (t > 0.5 not permitted). Change threshold.")
     stop()
