@@ -1,0 +1,33 @@
+library(dplyr)
+library(data.table)
+library(readr)
+setwd("/Users/urvashisingh/Documents/5PrimeSciences")
+
+testData <- fread("fn2stu.MAF0_.005.pos_.out_", header=TRUE)
+testData[, .N]
+head(testData)
+
+rm_palindrome <- function(testData, t) {
+  if (t > 0.5){
+    print("Invalid input (t > 0.5 not permitted). Change threshold.")
+    stop()
+  } else if (t == 0.5) {
+    print("Invalid input, as all palindromes will be deleted within 0.0 to 1.0 range. Change threshold.")
+    stop()
+  } else if (t < 0.5) {
+    lim_upper = 0.5 + t
+    lim_lower = 0.5 - t
+    palindromes <- testData[ ((reference_allele == "A" & other_allele == "T") | (reference_allele == "T" & other_allele == "A") | (reference_allele == "G" & other_allele == "C") | (reference_allele == "C" & other_allele == "G")), ]
+    palindromes_rem <- palindromes[ (eaf >= lim_lower & eaf <= lim_upper), ]
+    count <- palindromes_rem[, .N]
+    cat(count, "SNPs are palindromic and are within the threshold of", t, "and have been removed.")
+    finalData <- anti_join(testData, palindromes_rem, by = "rs_number")
+  }
+  return(finalData)
+}
+
+palindromes_f <- rm_palindrome(testData, 0.1)
+head(palindromes_f)
+palindromes_f[, .N]
+cat(count1, "have been removed" )
+print(count1, "have been removed")

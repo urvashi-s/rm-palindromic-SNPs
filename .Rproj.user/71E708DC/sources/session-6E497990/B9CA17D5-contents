@@ -1,0 +1,42 @@
+install.packages("devtools")
+install.packages("roxygen2")
+
+
+testData <- fread("fn2stu.MAF0_.005.pos_.out_", header=TRUE)
+testData[, .N]
+
+# SNPs with A/T or G/C alleles are known as palindromic SNPs, because their alleles 
+# are represented by the same pair of letters on the forward and reverse strands. 
+# Write a function that detects SNPs palindromic with palindromic alleles (A/T, T/A, G/C, or C/G) 
+# and removes them if their allele frequency is within a specific threshold around the allele frequency of 0.5.
+
+head(testData)
+
+palindromes <- testData[ ((reference_allele == "A" & other_allele == "T") | (reference_allele == "T" & other_allele == "A") | (reference_allele == "G" & other_allele == "C") | (reference_allele == "C" & other_allele == "G")), ]
+head(palindromes)
+palindromes[, .N]
+
+rm_palindrome <- function(testData, t) {
+  if (t > 0.5){
+    print("Invalid input (t > 0.5 not permitted). Change threshold.")
+    stop()
+  } else if (t == 0.5) {
+    print("Invalid input, as all palindromes will be deleted within 0.0 to 1.0 range. Change threshold.")
+    stop()
+  } else if (t < 0.5) {
+    lim_upper = 0.5 + t
+    lim_lower = 0.5 - t
+    palindromes <- testData[ ((reference_allele == "A" & other_allele == "T") | (reference_allele == "T" & other_allele == "A") | (reference_allele == "G" & other_allele == "C") | (reference_allele == "C" & other_allele == "G")), ]
+    palindromes_f <- palindromes[ !(eaf >= lim_lower & eaf <= lim_upper), ]
+    # head(removed_pal)
+    # count = removed_pal[, .N]
+    print(palindromes_f[, .N])
+    print(class(palindromes_f))
+  }
+  return(palindromes_f)
+}
+
+palindromes_f <- rm_palindrome(testData, 0.1)
+
+library(rm_palindrome)
+?rm_palindrome
